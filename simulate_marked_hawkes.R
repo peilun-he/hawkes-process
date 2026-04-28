@@ -1,9 +1,16 @@
 simulate_marked_hawkes <- function(t_max, mu, kernel, show_info = FALSE) {
   # Simulate multivariate marked Hawkes process: 
   #   lambda_{i}(t) = mu_{i} + \sum_{j=1}^{p} \sum_{t_k < t} phi_{ij}(t - t_k)
+  #
   # Inputs: 
-  
-  # Outputs:
+  #   t_max: scalar specifying the maximum time horizon.
+  #   mu: numeric vector of baseline intensities.
+  #   kernel: either a single function or a matrix of functions representing the excitation kernels.
+  #   show_info: logical; if TRUE, prints the probability of each event type.
+  #
+  # Outputs: 
+  #   lambda: list of intensity trajectories for each dimension.
+  #   event_times: list of event times for each dimension.
   
   if (is.function(kernel)) {
     p <- 1 # dimension of Hawkes process
@@ -59,10 +66,6 @@ simulate_marked_hawkes <- function(t_max, mu, kernel, show_info = FALSE) {
     for (j in 1: p) {
       lambda[[j]][t] <- lambda[[j]][t] + sum( mapply(function(f, x) f(t, x), kernel[j, ], event_times) )
     }
-    #excitation_self <- mapply(function(f, x) f(t, x), kernel, event_times)
-    #for (i in 1: length(excitation_self)) {
-    #  lambda[[i]] <- c(lambda[[i]], excitation_self[i])
-    #}
   }
   
   return(list(lambda = lambda, 
