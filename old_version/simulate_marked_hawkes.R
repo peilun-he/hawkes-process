@@ -35,6 +35,8 @@ simulate_marked_hawkes <- function(t_max, mu, kernel, show_info = FALSE) {
   
   kernel_self <- diag(kernel)
   
+  rt <- numeric(0)
+  
   while (t <= t_max) {
     M <- sum(mu) + sum( mapply(function(f, x) f(t, x), kernel_self, event_times) )
     t_new <- t + rexp(1, rate = M)
@@ -44,6 +46,8 @@ simulate_marked_hawkes <- function(t_max, mu, kernel, show_info = FALSE) {
     lambda_local <- mu + mapply(function(f, x) f(t_new, x), kernel_self, event_times)
     lambda_new <- sum(lambda_local)
     accept <- runif(1) <= lambda_new / M
+    
+    rt <- c(rt, lambda_new / M)
     
     t <- t_new
     
@@ -55,7 +59,7 @@ simulate_marked_hawkes <- function(t_max, mu, kernel, show_info = FALSE) {
       if (show_info) {
         print(paste("An event is accepted at time ", t_new, ".", sep = ""))
         print("The probability of each type is:")
-        print(round(lambda_local / lambda_new), 4)
+        print(round(lambda_local / lambda_new, 4))
         print(paste("This event is finally allocated to type ", type, ".", sep = ""))
         print("")
       }
@@ -69,5 +73,6 @@ simulate_marked_hawkes <- function(t_max, mu, kernel, show_info = FALSE) {
   }
   
   return(list(lambda = lambda, 
-              event_times = event_times))
+              event_times = event_times, 
+              rt = rt))
 }
