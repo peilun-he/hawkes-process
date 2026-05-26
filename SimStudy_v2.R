@@ -57,5 +57,6 @@ round(stat1, 3)
 round(stat2, 3)
 mu / (1 - alpha/beta)
 
+# example
 
 
